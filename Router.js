@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     function Router(routes) {
       var _this = this;
       this.routes = routes != null ? routes : {};
+      History.savedStates = [];
       History.Adapter.bind(window, 'statechange', function() {
         return _this.checkRoutes(History.getState());
       });
@@ -36,27 +37,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         for (regexText in _ref) {
           callback = _ref[regexText];
           regex = new RegExp(regexText);
-          url = state.data.url || state.hash;
-          if (regex.test(url)) callback.apply(window, regex.exec(url).slice(1));
+          url = state.data.url;
+          if (regex.test(url)) callback.call(window, regex.exec(url).slice(1), state.data.data);
         }
       }
       return this.trigger = true;
     };
 
-    Router.prototype.navigate = function(url, trigger, replace, name) {
+    Router.prototype.navigate = function(url, trigger, replace, name, data) {
       if (trigger == null) trigger = true;
       if (replace == null) replace = false;
       if (name == null) name = null;
+      if (data == null) data = null;
       this.trigger = trigger;
       if (replace) {
         return History.replaceState({
-          'url': url
-        }, null, url);
+	   'url': url,
+	   'data': data
+        }, name, url);
       } else {
         return History.pushState({
-          'url': url
-        }, null, url);
+	   'url': url,
+	   'data': data
+        }, name, url);
       }
+    };
+
+    Router.prototype.data = function(url, name, data) {
+      this.navigate(url, true, false, name, data);
     };
 
     Router.prototype.go = function(num) {

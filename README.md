@@ -25,3 +25,8 @@
 	//Navigate throught the History
 	router.go(2); //forward navigation
 	router.go(-3); //backward navigation
+
+	//Use history data
+	router.route('/posts/:id', function(id, data){ /* Use data somehow */ });
+	router.navigate('/posts/22', true, false, "Title", data);
+	router.data('/posts/22', "Title", data);

@@ -25,15 +25,18 @@ class window.Router
 				regex = new RegExp regexText
 				url = state.data.url or state.hash
 				if  regex.test url
-					callback.apply(window, regex.exec(url).slice(1))
+					callback.apply(window, regex.exec(url).slice(1), state.data.data)
 		@trigger = true
 
-	navigate : (url, trigger=true, replace=false, name=null)->
+	navigate : (url, trigger=true, replace=false, name=null, data=null)->
 		@trigger = trigger
 		if replace 
-			History.replaceState {'url' : url}, null, url
+			History.replaceState {'url' : url, 'data': data}, null, url
 		else
-			History.pushState {'url' : url}, null, url
+			History.pushState {'url' : url, 'data': data}, name, url
+
+	data: (url, name, data):
+	        navigate url, true, false, name, data
 
 	go: (num)->
 		History.go num
